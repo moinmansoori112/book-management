@@ -1,5 +1,8 @@
 # Thorium
 
+Shrikant Kajale
+Harsh Kumar Sinha
+
 ## Project - Books Management
 
 ### Key points
