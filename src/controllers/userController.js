@@ -1,5 +1,7 @@
+const { findOne } = require("../models/userModel")
 const userModel = require("../models/userModel")
 const UserModel = require("../models/userModel")
+const jwt = require("jsonwebtoken")
 
 
 const isrequestBody = (requestBody) => {
@@ -8,8 +10,8 @@ const isrequestBody = (requestBody) => {
 
 
 const isValidTitle = (title) => {
-    ['Mr', 'Mrs', 'Miss'].indexOf(title) !== -1
-    return
+    return ['Mr', 'Mrs', 'Miss'].indexOf(title) !== -1
+
 }
 
 
@@ -82,10 +84,13 @@ const CreateUser = async function (req, res) {
 
         }
 
-        if (!(/^(?=.[0-9])(?=.[!@#$%^&])[a-zA-Z0-9!@#$%^&]{8,15}$/.test(password))) {
-            return res.status(400).send({ status: false, message: `password is not valid` })
+        let a = password.length
+        if (!(a >= 8 && a <= 15)) return res.status(400).send({ status: false, message: "password is not valid" })
 
-        }
+        // if (!(/^(?=.[0-9])(?=.[!@#$%^&])[a-zA-Z0-9!@#$%^&]{8,15}$/.test(password))) {
+        //     return res.status(400).send({ status: false, message: `password is not valid` })
+
+        // }
 
         const user = await userModel.create(body)
         return res.status(201).send({ status: true, msg: "user created successfully", data: user })
@@ -97,6 +102,47 @@ const CreateUser = async function (req, res) {
 
     }
 }
+
+const logIn = async (req, res) => {
+    try {
+        let body = req.body
+        if (!isrequestBody(body))
+            return res.status(400).send({ status: false, msg: "invalid request parameter, please provide login details" })
+        const { email, password } = body
+        if (!isValid(email))
+            return res.status(400).send({ status: false, msg: "please enter email" })
+
+        if (!isValid(password))
+            return res.status(400).send({ status: false, msg: "please enter password" })
+
+        let input = await userModel.findOne({ email, password })
+
+        if (!input)
+            return res.status(404).send({ status: false, msg: "user not found please enter valid credentials" })
+
+        let token = jwt.sign({
+
+            userID: input._id.toString(),
+            group: "05",
+            iat: Math.floor(Date.now() / 1000),         //doubt clear about this after some time
+            exp: Math.floor(Date.now() / 1000) + 1 * 60 * 60
+
+        }, "group05")
+
+        res.setHeader("x-api-token", token) // look ion the postman body header
+
+        return res.status(200).send({ status: true, msg: "user loing successfully", data: token })
+    }
+    catch (err) {
+        return res.status(500).send({ status: false, msg: err.message })
+    }
+
+}
+
+module.exports.logIn=logIn
+
+
+
 
 
 module.exports.CreateUser = CreateUser
