@@ -55,13 +55,13 @@ const CreateUser = async function (req, res) {
         }
 
         if (!(/^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$/.test(phone))) {
-            return res.status(400).send({ status: false, message: `Mobile Number is not valid` })
+            return res.status(400).send({ status: false, message: "Mobile Number is not valid"})
 
         }
 
         let duplicatephone = await userModel.findOne({ phone });
         if (duplicatephone) {
-            return res.status(404).send({ status: false, msg: "phone is already in use" })
+            return res.status(400).send({ status: false, msg: "phone is already in use" })
         }
 
         if (!isValid(email)) {
@@ -70,7 +70,7 @@ const CreateUser = async function (req, res) {
         }
 
         if (!(/^\w+([\.-]?\w+)@\w+([\. -]?\w+)(\.\w{2,3})+$/.test(email))) {
-            return res.status(400).send({ status: false, message: `email is not valid` })
+            return res.status(400).send({ status: false, message: "email is not valid" })
 
         }
 
@@ -97,7 +97,7 @@ const CreateUser = async function (req, res) {
 
     }
     catch (error) {
-        console.log(error)
+        //console.log(error)
         res.status(500).send({ status: false, msg: error.message })
 
     }
