@@ -3,7 +3,7 @@ const bookModel = require("../models/booksModel")
 
 const userModel=require("../models/userModel")
 
-const isValidObject = async (requestBody) => {
+const isValidBody = async (requestBody) => {
     return (Object.keys(requestBody).length > 0)
 }
 
@@ -19,12 +19,12 @@ const isValid = async (value) => {
 const createBook = async (req, res) => {
     try{
     let body = req.body                   //this is wprking fine but only some edge case not handle
-    let id=req.body.userId
+    
 
-    if (!isValidObject(body))
+    if (!isValidBody(body))
         return res.status(400).send({ status: false, msg: "please enter some data to create book" })
 
-    const { title, excerpt, userId, category, subcategory, } = body
+    const { title, excerpt, userId, category, subcategory, } = body   //destructer
 
     if(!isValid(title))
     return res.send(400).send({status:false,msg:"please enter title"})
@@ -65,13 +65,16 @@ const createBook = async (req, res) => {
 
 const getBook=async(req,res)=>{
     try{                                              //it is working fine but not giving same outout as we want
-    const body=req.query
-    if(!isValidObject(body))
+    const input=req.query
+    if(!isValidBody(input))
     return res.status(400).send({msg:false,msg:"plase enter some data to find book"})
 
+    const{userId,category,subcategory}=input
     
 
-    const book=await bookModel.find(body,{isDeleted:false}).populate("userId")
+   // title, excerpt, userId, category, releasedAt, reviews      
+
+    const book=await bookModel.find(input,{isDeleted:false}).select({_id:1,title:1,excerpt:1,userId:1,category:1,releasedAt:1,reviews:1})
 
     if(!book) return res.send({status:false,msg:"no such  data found"})
 
