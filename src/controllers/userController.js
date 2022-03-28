@@ -55,7 +55,7 @@ const CreateUser = async function (req, res) {
         }
 
         if (!(/^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$/.test(phone))) {
-            return res.status(400).send({ status: false, message: "Mobile Number is not valid"})
+            return res.status(400).send({ status: false, message: "Mobile Number is not valid" })
 
         }
 
@@ -108,7 +108,9 @@ const logIn = async (req, res) => {
         let body = req.body
         if (!isrequestBody(body))
             return res.status(400).send({ status: false, msg: "invalid request parameter, please provide login details" })
+
         const { email, password } = body
+        
         if (!isValid(email))
             return res.status(400).send({ status: false, msg: "please enter email" })
 
@@ -139,7 +141,7 @@ const logIn = async (req, res) => {
 
 }
 
-module.exports.logIn=logIn
+module.exports.logIn = logIn
 
 
 
