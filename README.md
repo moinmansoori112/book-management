@@ -325,3 +325,25 @@ Refer below sample
   }
 }
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"_id":,"title":"excerpt":"userId":"category": "subcategory": "deleted": false,"reviews": 0,"deletedAt": """releasedAt": "createdAt":"updatedAt": 
+"reviewsData": 

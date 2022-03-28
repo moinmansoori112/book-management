@@ -5,12 +5,17 @@ const mongoose = require("mongoose")
 //const ObjectId=mongoose.Types.ObjectId
 
 const userModel = require("../models/userModel")
+const reviewModel = require("../models/reviewModel")
 
 
 const isValidRequestBody = (requestBody) => {
     return Object.keys(requestBody).length > 0
 }
-
+const isValidDate = (date) => {
+    const specificDate = new Date(date).setHours(0, 0, 0, 0);
+    const today = new Date().setHours(0, 0, 0, 0);
+    return specificDate < today;
+}
 
 const isValid = (value) => {
     {
@@ -94,7 +99,7 @@ const createBook = async function (req, res) {
             return res.status(400).send({ status: false, msg: "BAD REQUEST, please provide subCategory" })
         }
 
-        if (!isValid(releasedAt)) {
+        if (!isValidDate(releasedAt)) {
             return res.status(400).send({ status: false, msg: "BAD REQUEST, please provide releasedAt details" })
         }
         else {
@@ -137,7 +142,7 @@ const getBook = async (req, res) => {
 
 const getById = async (req, res) => {
     try {
-        const bookId = req.params
+        const bookId = req.params.bookId //if we use params to find we use params name
 
         if (!bookId)
 
@@ -146,10 +151,18 @@ const getById = async (req, res) => {
         if (!isValidobjectId(bookId))
             return res.status(400).send({ status: false, msg: "please enter valid bookId" })
 
-        const findBook = await bookModel.find({ bookId, isDeleted: false })
+        let result = await reviewModel.find({ bookId:bookId }).select({ bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
+
+        const findBook = await bookModel.findOne({ _id: bookId, isDeleted: false }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, subcategory: 1, reviews: 1, deletedAt: 1, releasedAt: 1, createdAt: 1, updatedAt: 1, reviewsData: result })
 
         if (!findBook)
             return res.status(400).send({ status: false, msg: "bookId not found please enter valid bookId" })
+
+
+
+
+
+        return res.status(200).send({ status: false, data: findBook })
 
     }
     catch (err) {

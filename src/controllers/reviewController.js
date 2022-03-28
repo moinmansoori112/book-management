@@ -31,6 +31,7 @@ const createPost = async (req, res) => {
         const data = req.body
         const book = req.params.bookId
         if (!isValidRequestBody(data))
+        
             return res.status(400).send({ status: false, msg: "please enter valid review details" })
 
         const { reviewedAt, rating, reviewedBy, bookId } = data
@@ -56,12 +57,12 @@ const createPost = async (req, res) => {
 
         const reviewdatails = await reviewModel.create(data)
 
-        const count = await bookModel.findOneAndUpdate({ _id: book, isDeleted: false }, { $inc: { reviews: 200 } })//this is good practice
+        const count = await bookModel.findOneAndUpdate({ _id: book, isDeleted: false }, { $inc: { reviews: 1 } })//this is good practice
         //{ $inc: { <field1>: <amount1>, <field2>: <amount2>, ... } }
         const details = {
             _id: reviewdatails._id,
             bookId: reviewdatails.bookId,
-            reviewedBy: reviewdatails.reviewedBy,         //this way to use create and some useful data
+            reviewedBy: reviewdatails.reviewedBy,         //this way to use create and some usefull data(we can say here we select who data we want)
             reviewedAt: reviewdatails.reviewedAt,
             rating: reviewdatails.rating,
             review: reviewdatails.review
