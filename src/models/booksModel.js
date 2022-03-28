@@ -33,7 +33,7 @@ const bookModel = new mongoose.Schema({
     reviews: {
         type: Number,
         default: 0,
-        comments: Number
+        //comments: Number
         //comment: Holds number of reviews of this book},
 
     },

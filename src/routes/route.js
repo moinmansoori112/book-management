@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const UserController = require("../controllers/userController")
 
+const reviewController=require("../controllers/reviewController")
+
 const bookController=require("../controllers/bookController")
 // const internController=require("../controllers/internController")
 
@@ -12,6 +14,8 @@ router.post("/login",UserController.logIn)
 router.post("/books",bookController.createBook)
 
 router.get("/getbooks",bookController.getBook)
+
+router.post("/books/:bookId/review",reviewController.createPost)
 
 
 module.exports = router
