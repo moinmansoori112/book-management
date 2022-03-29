@@ -126,10 +126,10 @@ const logIn = async (req, res) => {
 
             userID: input._id.toString(),
             group: "05",
-            iat: Math.floor(Date.now() / 1000),         //doubt clear about this after some time
+            iat: Math.floor(Date.now() / 1000),         //doubt clear about this after some time   //payload
             exp: Math.floor(Date.now() / 1000) + 1 * 60 * 60
 
-        }, "group05")
+        }, "group05")//secret key
 
         res.setHeader("x-api-token", token) // look ion the postman body header
 

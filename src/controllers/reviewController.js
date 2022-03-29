@@ -31,7 +31,7 @@ const createPost = async (req, res) => {
         const data = req.body
         const book = req.params.bookId
         if (!isValidRequestBody(data))
-        
+
             return res.status(400).send({ status: false, msg: "please enter valid review details" })
 
         const { reviewedAt, rating, reviewedBy, bookId } = data
@@ -78,4 +78,114 @@ const createPost = async (req, res) => {
     }
 }
 
-module.exports.createPost = createPost
+
+
+
+const updataReview = async (req, res) => {
+    try {
+        let data = req.body
+        let bookId = req.params.bookId
+        let reviewId = req.params.reviewId
+
+        if (!isValidRequestBody(data)) {
+            return res.status(400).send({ status: false, msg: "enter some data to update" })
+        }
+
+        const { review, rating, reviewedBy } = data
+
+        if (!bookId) {
+            return res.status(400).send({ status: false, msg: "please enter bookId" })
+        }
+
+        if (!isValidobjectId(bookId)) {
+            return res.status(400).send({ status: false, msg: "bookId id is not valid" })
+        }
+
+        if (!reviewId) {
+            return res.status(400).send({ status: false, msg: "please enter reviewId" })
+        }
+
+        if (!isValidobjectId(reviewId)) {
+            return res.status(400).send({ status: false, msg: "reviewId in not valid" })
+        }
+
+        if (!isValid(reviewedBy)) {
+            return res.status(400).send({ status: false, msg: "please enter reviewedBy" })
+        }
+
+        if (!isValid(rating)) {
+            return res.status(400).send({ status: false, msg: "please enter rating" })
+
+        }
+        const findBook = await reviewModel.findOne({ _id: reviewId, bookId: bookId, isDeleted: false })
+        if (!findBook) {
+            return res.status(400).send({ status: false, msg: "bookId or reviewId is not matching " })
+        }
+
+        const updatedData = await reviewModel.findOneAndUpdate({ _id: reviewId, bookId: bookId, isDeleted: false }, data, { new: true ,updatedAt:Date.now()})
+
+        if (!updatedData) {
+            return res.status(400).send({ status: false, msg: "no such user exists" })
+        }
+        return res.status(200).send({ status: true, msg: "updated sunccessfully", data: updatedData })
+
+
+    }
+    catch (error) {
+        res.status(500).send({ status: false, msg: error.messsaga })
+    }
+
+}
+
+
+// DELETE /books/:bookId/review/:reviewId
+
+const deletedReviewById=async (req,res)=>{
+    try{ 
+        
+        let bookId = req.params.bookId
+        let reviewId = req.params.reviewId
+
+        
+
+        
+        if (!bookId) {
+            return res.status(400).send({ status: false, msg: "please enter bookId" })
+        }
+
+        if (!isValidobjectId(bookId)) {
+            return res.status(400).send({ status: false, msg: "bookId id is not valid" })
+        }
+
+        if (!reviewId) {
+            return res.status(400).send({ status: false, msg: "please enter reviewId" })
+        }
+
+        if (!isValidobjectId(reviewId)) {
+            return res.status(400).send({ status: false, msg: "reviewId in not valid" })
+        }
+
+        const findreviewer = await reviewModel.findOneAndUpdate({ _id: reviewId, bookId: bookId, isDeleted:false },{isDeleted:true,new:true})
+        if (!findreviewer) {
+            return res.status(400).send({ status: false, msg: "reviewer not exist's " })
+        }
+
+        const updated=await bookModel.findOneAndUpdate({_id:bookId,isDeleted:false},{$inc:{reviews:(-1)}})
+        return res.status(200).send({status:true,msg:"successfully deleted"})
+
+        
+
+
+    }catch(error){
+        return res.status(500).send({status:false,msg:error.message})
+    }
+
+}
+
+
+
+
+module.exports.createPost=createPost
+module.exports.updataReview=updataReview
+
+module.exports.deletedReviewById=deletedReviewById

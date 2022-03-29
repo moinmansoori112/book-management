@@ -38,7 +38,7 @@ const isValidobjectId = (objectId) => {
 
 const createBook = async function (req, res) {
     try {
-        body = req.body
+      let  body = req.body
 
         const { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = body
 
@@ -151,14 +151,12 @@ const getById = async (req, res) => {
         if (!isValidobjectId(bookId))
             return res.status(400).send({ status: false, msg: "please enter valid bookId" })
 
-        let result = await reviewModel.find({ bookId:bookId }).select({ bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
+        let result = await reviewModel.find({ bookId: bookId, isDeleted: false }).select({ bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
 
         const findBook = await bookModel.findOne({ _id: bookId, isDeleted: false }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, subcategory: 1, reviews: 1, deletedAt: 1, releasedAt: 1, createdAt: 1, updatedAt: 1, reviewsData: result })
 
         if (!findBook)
             return res.status(400).send({ status: false, msg: "bookId not found please enter valid bookId" })
-
-
 
 
 
@@ -170,18 +168,105 @@ const getById = async (req, res) => {
     }
 }
 
-
-
-
 const update = async (req, res) => {
-    const body = req.query
+    try {
+        const body = req.params.bookId
+        const data = req.body
+        if (!body) {
+            return res.status(400).send({ status: false, msg: "please provide bookId" })
+
+        }
+        if (!isValidobjectId(body)) {
+            return res.status(400).send({ status: false, msg: "please enter valid bookId" })
+        }
+
+        let validBody = await bookModel.findOne({ _id: body, isDeleted: false })
+        if (!validBody) {
+            return res.status(400).send({ status: false, msg: "bookId is not valid" })
+        }
+
+        if (!isValidRequestBody(data)) {
+            return res.status(400).send({ status: false, msg: "please enter valid data" })
+        }
+        //     title excerpt
+        //     release date
+        //  ISBN
+
+        const { title, excerpt, releasedAt, ISBN } = data
+
+        if (!isValid(title)) {
+            return res.status(400).send({ status: false, msg: "please enter valid title" })
+        }
+        if (!isValid(excerpt)) {
+            return res.status(400).send({ status: false, msg: "please enter valid excerpt" })
+        }
+        if (!isValidDate(releasedAt)) {
+            return res.status(400).send({ status: false, msg: "please enter valid releasedAt" })
+        }
+        if (!isValid(ISBN)) {
+            return res.status(400).send({ status: false, msg: "please enter valid ISBN" })
+        }
+        const duplicate = await bookModel.findOne({ title: title, isDeleted: false })
+
+        const duplicateISBN = await bookModel.findOne({ ISBN: ISBN, isDeleted: false })
+
+        if (duplicate) {
+            return res.status(404).send({ status: false, msg: "title already exist " })
+        }
+
+        if (duplicateISBN) {
+            return res.status(404).send({ status: false, msg: "ISBN already exist " })
+        }
+
+        const updatedData = await bookModel.findOneAndUpdate({ _id: body, isDeleted: false }, data, { new: true })
+
+        if (!updatedData) {
+            return res.status(404).send({ status: false, msg: " No such data found" })
+        }
+        return res.status(200).send({ status: true, msg: "Updated data successfully", data: updatedData })
+
+    }
+    catch (error) {
+        return res.status(500).send({ status: false, msg: error.message })
+    }
 }
+
+const deleteById = async (req, res) => {
+    try {
+        const id = req.params.bookId
+        if (!id) {
+            return res.status(400).send({ status: false, msg: "please provide bookId" })
+        }
+        if (!isValidobjectId(id)) {
+            return res.status(400).send({ status: false, msg: "please provide valid bookId" })
+        }
+
+        const findBook = await bookModel.findOneAndUpdate({ _id: id, isDeleted: false }, { isDeleted: true, deletedAt: Date.now() }, { new: true })   //date.now alternative is nwe DAta
+        if (!findBook) {
+            return res.status(404).send({ status: false, msg: "No such data found" })
+        }
+        return res.status(200).send({ status: true, msg: "data successfully deleted" })
+
+    }
+    catch (error) {
+        return res.status(500).send({ status: false, msg: error.message })
+    }
+
+}
+
+
+
+
+
 module.exports.getById = getById
 
 module.exports.getBook = getBook
 
-
 module.exports.createBook = createBook
+
+module.exports.update = update
+
+module.exports.deleteById = deleteById
 
 
 
