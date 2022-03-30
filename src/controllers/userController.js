@@ -124,7 +124,7 @@ const logIn = async (req, res) => {
 
         let token = jwt.sign({
 
-            userID: input._id.toString(),
+            userId: input._id.toString(),
             group: "05",
             iat: Math.floor(Date.now() / 1000),         //doubt clear about this after some time   //payload
             exp: Math.floor(Date.now() / 1000) + 1 * 60 * 60

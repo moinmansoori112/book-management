@@ -34,6 +34,8 @@ const userSchema = new mongoose.Schema(
         password: {
             type: String,
             required: true,
+            min:8,
+            max:15
             //match: [/^(?=.[0-9])(?=.[!@#$%^&])[a-zA-Z0-9!@#$%^&]{8,15}$/]
         },
         address: {
