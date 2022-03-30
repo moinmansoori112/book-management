@@ -38,14 +38,16 @@ const createPost = async (req, res) => {
 
         if (!isValid(rating))
             return res.status(400).send({ status: false, msg: "please enter ratings" })
-
+        if(!(rating>1&& rating<=5)){
+            return res.status(400).send({status:false,msg:" Rating ranges from  1 to 5"})
+        }
         if (!isValid(reviewedBy))
             return res.status(400).send({ status: false, msg: "please enter reviedname" })
 
         if (!isValid(bookId))
             return res.status(400).send({ status: false, msg: "please enter bookId" })
 
-        const findBook = await bookModel.findOne({ _id: book, isDeleted: false })
+        const findBook = await bookModel.find({ _id:book, isDeleted: false })    //find by id is not handle isdeleted CASE
         if (!findBook)
             return res.status(400).send({ status: false, msg: "bookId not found please enter valid bookId" })
 
@@ -77,7 +79,6 @@ const createPost = async (req, res) => {
         return res.status(500).send({ status: false, msg: err.message })
     }
 }
-
 
 
 
@@ -123,32 +124,44 @@ const updataReview = async (req, res) => {
         }
 
         const updatedData = await reviewModel.findOneAndUpdate({ _id: reviewId, bookId: bookId, isDeleted: false }, data, { new: true ,updatedAt:Date.now()})
+        const findbook = await bookModel.findOne({ _id: req.params.bookId, isDeleted: false })
+        if (updatedData) {
+            let bookData = {
+                bookId: findbook._id,
+                title: findbook.title,
+                exceprt: findbook.exceprt,
+                category: findbook.category,
+                subcategory: findbook.subcategory,
+                reviews: findbook.reviews,
+                reviewsData: []
+            }
 
-        if (!updatedData) {
-            return res.status(400).send({ status: false, msg: "no such user exists" })
+            let reviewsData = await reviewModel.find({ bookId: bookId, isDeleted: false }).select({ bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
+            bookData.reviewsData = reviewsData
+            res.status(201).send({ status: true, message: "Review updated successfully", data: bookData })
+            return
         }
-        return res.status(200).send({ status: true, msg: "updated sunccessfully", data: updatedData })
 
+        else {
+            res.status(404).send({ status: false, message: "Either your book is deleted or your review is not present" })
 
+        }
     }
+
     catch (error) {
         res.status(500).send({ status: false, msg: error.messsaga })
     }
 
 }
 
-
 // DELETE /books/:bookId/review/:reviewId
 
-const deletedReviewById=async (req,res)=>{
-    try{ 
-        
+const deletedReviewById = async (req, res) => {
+    try {
+
         let bookId = req.params.bookId
         let reviewId = req.params.reviewId
 
-        
-
-        
         if (!bookId) {
             return res.status(400).send({ status: false, msg: "please enter bookId" })
         }
@@ -165,19 +178,19 @@ const deletedReviewById=async (req,res)=>{
             return res.status(400).send({ status: false, msg: "reviewId in not valid" })
         }
 
-        const findreviewer = await reviewModel.findOneAndUpdate({ _id: reviewId, bookId: bookId, isDeleted:false },{isDeleted:true,new:true})
+        const findreviewer = await reviewModel.findOneAndUpdate({ _id: reviewId, bookId: bookId, isDeleted: false }, { isDeleted: true, deletedAt: Date.now(), new: true })
         if (!findreviewer) {
             return res.status(400).send({ status: false, msg: "reviewer not exist's " })
         }
 
-        const updated=await bookModel.findOneAndUpdate({_id:bookId,isDeleted:false},{$inc:{reviews:(-1)}})
-        return res.status(200).send({status:true,msg:"successfully deleted"})
-
-        
+        const updated = await bookModel.findOneAndUpdate({ _id: bookId, isDeleted: false }, { $inc: { reviews: (-1) } })
+        return res.status(200).send({ status: true, msg: "successfully deleted" })
 
 
-    }catch(error){
-        return res.status(500).send({status:false,msg:error.message})
+
+
+    } catch (error) {
+        return res.status(500).send({ status: false, msg: error.message })
     }
 
 }
@@ -185,7 +198,7 @@ const deletedReviewById=async (req,res)=>{
 
 
 
-module.exports.createPost=createPost
-module.exports.updataReview=updataReview
+module.exports.createPost = createPost
+module.exports.updataReview = updataReview
 
-module.exports.deletedReviewById=deletedReviewById
+module.exports.deletedReviewById = deletedReviewById

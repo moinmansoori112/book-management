@@ -50,13 +50,10 @@ const authorization=async (req,res,next)=>{
         const user = book.userId.toString()
        
         if(user !== id ){
-            return res.status(400).send({status:false,msg:"User Is Not Authorized to Edit"})
+            return res.status(403).send({status:false,msg:"User Is Not Authorized to Edit"})
         }
 
         next()
-
-         
-
 
     }catch(err){
         return res.status(500).status({status:false,msg:err.message})

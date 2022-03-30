@@ -87,10 +87,6 @@ const CreateUser = async function (req, res) {
         let a = password.length
         if (!(a >= 8 && a <= 15)) return res.status(400).send({ status: false, message: "password is not valid" })
 
-        // if (!(/^(?=.[0-9])(?=.[!@#$%^&])[a-zA-Z0-9!@#$%^&]{8,15}$/.test(password))) {
-        //     return res.status(400).send({ status: false, message: `password is not valid` })
-
-        // }
 
         const user = await userModel.create(body)
         return res.status(201).send({ status: true, msg: "user created successfully", data: user })
@@ -127,7 +123,7 @@ const logIn = async (req, res) => {
             userId: input._id.toString(),
             group: "05",
             iat: Math.floor(Date.now() / 1000),         //doubt clear about this after some time   //payload
-            exp: Math.floor(Date.now() / 1000) + 1 * 60 * 60
+            exp: Math.floor(Date.now() / 1000) + 1 * 30 * 60    //1 hourds:minute:second
 
         }, "group05")//secret key
 
@@ -142,10 +138,6 @@ const logIn = async (req, res) => {
 }
 
 module.exports.logIn = logIn
-
-
-
-
 
 module.exports.CreateUser = CreateUser
 

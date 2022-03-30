@@ -2,8 +2,6 @@ const booksModel = require("../models/booksModel")
 const bookModel = require("../models/booksModel")
 const mongoose = require("mongoose")
 
-//const ObjectId=mongoose.Types.ObjectId
-
 const userModel = require("../models/userModel")
 const reviewModel = require("../models/reviewModel")
 
@@ -11,11 +9,7 @@ const reviewModel = require("../models/reviewModel")
 const isValidRequestBody = (requestBody) => {
     return Object.keys(requestBody).length > 0
 }
-// const isValidDate = (date) => {
-//     const specificDate = new Date(date).setHours(0, 0, 0, 0);
-//     const today = new Date().setHours(0, 0, 0, 0);
-//     return specificDate < today;
-// }
+
 
 const isValid = (value) => {
     {
@@ -130,11 +124,12 @@ const createBook = async function (req, res) {
 }
 
 
+
 const getBook = async (req, res) => {
     try {
         const input = req.query
 
-        const book = await bookModel.find(input, { isDeleted: false }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1, createdAt: 0, updatedAt: 0, subcategory: 0, deletedAt: 0, __v: 0 }).sort({ title: 1 })
+        const book = await bookModel.find(input, { isDeleted: false }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1, createdAt: 0, updatedAt: 0, subcategory: 1, deletedAt: 0, __v: 0 }).sort({ title: 1 })
 
         if (book.length==0) return res.send({ status: false, msg: "no such  data found" })
 
