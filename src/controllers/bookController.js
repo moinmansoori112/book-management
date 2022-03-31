@@ -129,7 +129,7 @@ const getBook = async (req, res) => {
 
         const book = await bookModel.find(input, { isDeleted: false }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1, createdAt: 0, updatedAt: 0, subcategory: 1, deletedAt: 0, __v: 0 }).sort({ title: 1 })
 
-        if (book.length == 0) return res.send({ status: false, msg: "no such  data found" })
+        if (book.length == 0) return res.status(404).send({ status: false, msg: "no such  data found" })
 
         return res.status(200).send({ status: true, msg: "Book lists", data: book })
     }

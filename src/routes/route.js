@@ -16,7 +16,7 @@ router.post("/login",UserController.logIn)
 
 router.post("/books",mid.authentication,bookController.createBook)
 
-router.get("/getbooks",mid.authentication,bookController.getBook)
+router.get("/books",mid.authentication,bookController.getBook)
 
 router.post("/books/:bookId/review",reviewController.createPost)
 
