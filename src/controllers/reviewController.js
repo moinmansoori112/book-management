@@ -38,16 +38,17 @@ const createPost = async (req, res) => {
 
         if (!isValid(rating))
             return res.status(400).send({ status: false, msg: "please enter ratings" })
-        if(!(rating>1&& rating<=5)){
-            return res.status(400).send({status:false,msg:" Rating ranges from  1 to 5"})
+
+        if (!(rating > 1 && rating <= 5)) {
+            return res.status(400).send({ status: false, msg: " Rating ranges from  1 to 5" })
         }
         if (!isValid(reviewedBy))
             return res.status(400).send({ status: false, msg: "please enter reviedname" })
 
-        if (!isValid(bookId))
+        if (!isValid(bookId))//add something here
             return res.status(400).send({ status: false, msg: "please enter bookId" })
 
-        const findBook = await bookModel.find({ _id:book, isDeleted: false })    //find by id is not handle isdeleted CASE
+        const findBook = await bookModel.find({ _id: book, isDeleted: false })    //find by id is not handle isdeleted CASE
         if (!findBook)
             return res.status(400).send({ status: false, msg: "bookId not found please enter valid bookId" })
 
@@ -123,7 +124,7 @@ const updataReview = async (req, res) => {
             return res.status(400).send({ status: false, msg: "bookId or reviewId is not matching " })
         }
 
-        const updatedData = await reviewModel.findOneAndUpdate({ _id: reviewId, bookId: bookId, isDeleted: false }, data, { new: true ,updatedAt:Date.now()})
+        const updatedData = await reviewModel.findOneAndUpdate({ _id: reviewId, bookId: bookId, isDeleted: false }, data, { new: true, updatedAt: Date.now() })
         const findbook = await bookModel.findOne({ _id: req.params.bookId, isDeleted: false })
         if (updatedData) {
             let bookData = {
@@ -138,8 +139,8 @@ const updataReview = async (req, res) => {
 
             let reviewsData = await reviewModel.find({ bookId: bookId, isDeleted: false }).select({ bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
             bookData.reviewsData = reviewsData
-            res.status(201).send({ status: true, message: "Review updated successfully", data: bookData })
-            return
+            return res.status(201).send({ status: true, message: "Review updated successfully", data: bookData })  //think something
+
         }
 
         else {

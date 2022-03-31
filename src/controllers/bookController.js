@@ -35,8 +35,6 @@ const createBook = async function (req, res) {
         let id = req.userId
         let body = req.body
 
-       
-
         if (!isValidRequestBody(body)) {
             return res.status(400).send({ status: false, msg: "Invalid request parameters, please provide valid book details" })
         }
@@ -51,7 +49,7 @@ const createBook = async function (req, res) {
         if (!isValidobjectId(userId)) {
             return res.status(400).send({ status: false, msg: "Invalid userId, please enter valid userId" })
         }
-        
+
         let userDetails = await userModel.findById(userId)
 
         if (!userDetails) {
@@ -59,9 +57,9 @@ const createBook = async function (req, res) {
         }
 
 
-       if(id !== userId){
-          return res.status(403).send({status:false,msg:"You are not authorized to edit details"})
-      }
+        if (id !== userId) {
+            return res.status(403).send({ status: false, msg: "You are not authorized to edit details" })
+        }
         if (!isValid(title)) {
             return res.status(400).send({ status: false, msg: "BAD REQUEST, please provide title" })
         }
@@ -69,7 +67,7 @@ const createBook = async function (req, res) {
         let isUsedTitle = await bookModel.findOne({ title, isDeleted: false })
 
         if (isUsedTitle) {
-            return res.status(400).send({ status: false, msg: `this title=>${title} is already used`})
+            return res.status(400).send({ status: false, msg: `this title=>${title} is already used` })
         }
 
         if (!isValid(excerpt)) {
@@ -93,7 +91,7 @@ const createBook = async function (req, res) {
         }
 
         if (!isValid(category)) {
-        return res.status(400).send({ status: false, msg: "BAD REQUEST, please provide category" })
+            return res.status(400).send({ status: false, msg: "BAD REQUEST, please provide category" })
         }
 
         if (!isValid(subcategory)) {
@@ -131,7 +129,7 @@ const getBook = async (req, res) => {
 
         const book = await bookModel.find(input, { isDeleted: false }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1, createdAt: 0, updatedAt: 0, subcategory: 1, deletedAt: 0, __v: 0 }).sort({ title: 1 })
 
-        if (book.length==0) return res.send({ status: false, msg: "no such  data found" })
+        if (book.length == 0) return res.send({ status: false, msg: "no such  data found" })
 
         return res.status(200).send({ status: true, msg: "Book lists", data: book })
     }
@@ -163,7 +161,7 @@ const getById = async (req, res) => {
 
         }
 
-        return res.status(200).send({ status: false, data: findBook })
+        return res.status(200).send({ status: true, data: findBook })
 
     }
     catch (err) {
@@ -191,7 +189,7 @@ const update = async (req, res) => {
         if (!isValidRequestBody(data)) {
             return res.status(400).send({ status: false, msg: "please enter valid data" })
         }
-       
+
 
         const { title, excerpt, releasedAt, ISBN } = data
 
@@ -206,8 +204,8 @@ const update = async (req, res) => {
         }
 
         if (!(/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/.test(releasedAt))) {
-            res.status(400).send({ status: false, message: `${releasedAt} is invalid format, please enter date in YYYY-MM-DD format` })
-            return
+            return res.status(400).send({ status: false, message: `${releasedAt} is invalid format, please enter date in YYYY-MM-DD format` })
+           
         }
         if (!isValid(ISBN)) {
             return res.status(400).send({ status: false, msg: "please enter valid ISBN" })
@@ -244,7 +242,7 @@ const update = async (req, res) => {
 
 const deleteById = async (req, res) => {
     try {
-        
+
         const id = req.params.bookId
         if (!id) {
             return res.status(400).send({ status: false, msg: "please provide bookId" })
