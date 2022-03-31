@@ -139,7 +139,7 @@ const updataReview = async (req, res) => {
 
             let reviewsData = await reviewModel.find({ bookId: bookId, isDeleted: false }).select({ bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
             bookData.reviewsData = reviewsData
-            return res.status(201).send({ status: true, message: "Review updated successfully", data: bookData })  //think something
+            return res.status(200).send({ status: true, message: "Review updated successfully", data: bookData })  //think something
 
         }
 

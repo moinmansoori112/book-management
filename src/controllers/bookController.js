@@ -161,7 +161,7 @@ const getById = async (req, res) => {
 
         }
 
-        return res.status(200).send({ status: true, data: findBook })
+        return res.status(200).send({ status: true,msg:"book details", data: findBook })
 
     }
     catch (err) {
