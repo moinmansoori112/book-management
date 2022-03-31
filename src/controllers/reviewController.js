@@ -43,7 +43,7 @@ const createPost = async (req, res) => {
             return res.status(400).send({ status: false, msg: " Rating ranges from  1 to 5" })
         }
         if (!isValid(reviewedBy))
-            return res.status(400).send({ status: false, msg: "please enter reviedname" })
+            return res.status(400).send({ status: false, msg: "please enter reviewedname" })
 
         if (!isValid(bookId))//add something here
             return res.status(400).send({ status: false, msg: "please enter bookId" })

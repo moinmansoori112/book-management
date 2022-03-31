@@ -14,7 +14,6 @@ const isValidTitle = (title) => {
 
 }
 
-
 const isValid = (value) => {
     if (typeof value === "undefined" || value === null)
         return false
@@ -129,7 +128,7 @@ const logIn = async (req, res) => {
 
         res.setHeader("x-api-token", token) // look ion the postman body header
 
-        return res.status(200).send({ status: true, msg: "user loing successfully", data: token })
+        return res.status(200).send({ status: true, msg: "user login successfully", data: token })
     }
     catch (err) {
         return res.status(500).send({ status: false, msg: err.message })
